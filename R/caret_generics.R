@@ -20,8 +20,8 @@ features <- function(mdl){
 #' función genérica.
 features.train <- function(mdl){
   sapply(mdl$trainingData %>% select(-.outcome), function(feature){
-    if("numeric" %in% class(feature)){
-      list(class = class(feature), mean = mean(feature), std = var(feature))
+    if("numeric" %in% class(feature) || "integer" %in% class(feature)){
+      list(class = "numeric", mean = mean(feature), std = var(feature))
     } else if ("factor" %in% class(feature)){
       list(class = class(feature), levels = levels(feature))
     } else {
@@ -44,14 +44,14 @@ modelInfo <- function(mdl){
 modelInfo.train <- function(mdl){
   if(is.null(mdl$name)){
     mdl$name <- "Unnamed model"
-    warning("The model should be named.")
+    #warning("The model should be named.")
   }
   if(is.null(mdl$version)){
     mdl$version <- "Unversioned model"
-    warnig("The model should have a version.")
+    #warning("The model should have a version.")
   }
   list(name = mdl$name, method = mdl$method, type = mdl$modelType,
-       version = mdl$version)
+       version = mdl$version, hyperParameters = mdl$bestTune)
 }
 
 #' Función que obtiene los resultados del entrenamiento de un modelo,
@@ -63,6 +63,18 @@ trainResults <- function(mdl){
 }
 #' Implementación para un modelo de caret.
 #' @inheritParams trainResults
+#' @return data.frame con columnas 'Metric' con el nombre de la metrica y
+#' columna 'Value' con el valor de la métrica.
 trainResults.train <- function(mdl){
-  mdl$results
+  if(nrow(mdl$results) > 0){ # Entrenamos con algún tipo de validación
+      mdl$results %>%
+        inner_join(mdl$bestTune, by = colnames(mdl$bestTune)) %>%
+        select(-one_of(colnames(mdl$bestTune))) %>%
+        gather(key = "Metric", value = "Value")
+  } else { # Entrenamos el modelo tal cual
+    data.frame(
+      Metric = setdiff(colnames(mdl$results), colnames(mdl$bestTune)),
+      Value = NA
+    )
+  }
 }

@@ -18,7 +18,45 @@ checkMissingColumns(X, vars)
 # -----------------------------------------------------------------------------
 # ----------------- TEST CONVERTDATA ------------------------------------------
 # -----------------------------------------------------------------------------
-
+X <- iris
+vars <- list(
+  Species = list(class = 'factor',
+                 levels = c('setosa', 'virginica', 'versicolor')),
+  Petal.Length = list(class = 'numeric')
+)
 result <- convertData(X, vars)
 expect_equal(names(vars), colnames(result))
-sapply(result, class)
+expect_equal(unname(sapply(result, class)) , c("factor", "numeric"))
+expect_equal(sort(levels(result$Species)),
+             sort(c('setosa', 'virginica', 'versicolor')))
+
+# -----------------------------------------------------------------------------
+# ---------------------- TEST CHECKIFNA ---------------------------------------
+# -----------------------------------------------------------------------------
+X <- iris
+vars <- list(
+  Species = list(class = 'factor',
+                 levels = c('setosa', 'virginica', 'versicolor')),
+  Petal.Length = list(class = 'numeric')
+)
+X_1 <- convertData(X, vars)
+checkIfNas(X_1, X, vars)
+
+X <- iris
+vars <- list(
+  Species = list(class = 'factor',
+                 levels = c('setosa', 'virginica')),
+  Petal.Length = list(class = 'numeric')
+)
+X_1 <- convertData(X, vars)
+expect_error(checkIfNas(X_1, X, vars), "validation error")
+
+X <- iris %>% mutate(FooColumn = "NotNumeric")
+vars <- list(
+  Species = list(class = 'factor',
+                 levels = c('setosa', 'virginica', 'versicolor')),
+  Petal.Length = list(class = 'numeric'),
+  FooColumn = list(class = 'numeric')
+)
+X_1 <- convertData(X, vars)
+expect_error(checkIfNas(X_1, X, vars), "validation error")

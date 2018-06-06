@@ -33,9 +33,19 @@ checkMissingColumns <- function(X, vars){
 #' @return data.frame con las columnas en el tipo de datos correcto, aunque
 #' pueden producirse registros nulos.
 convertData <- function(X, vars){
-  sapply(names(vars), function(n){
-    as(X[[n]], vars[[n]]$class)
-  }, simplify = FALSE) %>% data.frame()
+  # Suprimimos los warnigs porque si se encuentra un valor nulo luego lo
+  # pillamos con la funcion checkIfNas, y tendremos que lanzar un error.
+  suppressWarnings(
+    sapply(names(vars), function(n){
+      cls <- vars[[n]]$class
+      if("factor" %in% cls){
+        lvls <- vars[[n]]$levels
+        factor(X[[n]], levels = lvls, ordered = "ordered" %in% cls)
+      } else {
+        as(X[[n]], vars[[n]]$class)
+      }
+    }, simplify = FALSE) %>% data.frame()
+  )
 }
 
 #' Chequea si existen nulos en el data.frame de entrada y da errores de validacion.
@@ -47,16 +57,18 @@ checkIfNas <- function(X_1, X, vars){
     sapply(names(vars), function(n){
       nulos <- X[[n]][is.na(X_1[[n]])]
       if(length(nulos) > 0){
-        if(vars[[n]]$class == 'numeric'){
-          paste0("Cannot convert (", paste(nulos, collapse = ", "),
+        if('numeric' %in% vars[[n]]$class ){
+          paste0(n, ": Cannot convert (", paste(unique(nulos), collapse = ", "),
                  ") to numeric.")
-        } else if(vars[[n]]$class == 'factor'){
-          paste0("Levels ", paste(unique(nulos), collapse = ", "),
-                 " not present in train set.")
+        } else if('factor' %in% vars[[n]]$class){
+          paste0(n, ": Levels (", paste(unique(nulos), collapse = ", "),
+                 ") not present in train set.")
+        } else {
+          paste0(n, ": NA values found in column.")
         }
       }
-    }, simplify = FALSE) %>% as_vector()
-  if(!is.null(errors)){
+    }, simplify = FALSE) %>% compact()
+  if(length(errors) > 0){
     stop(paste0("validation error: ", paste(errors, collapse = ", ")))
   }
 }

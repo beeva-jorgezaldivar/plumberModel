@@ -7,6 +7,7 @@ CaretPlumber <- R6Class(
     #' Constructor de la api.
     #' @param model Modelo base de la API.
     initialize = function(model){
+      super$initialize()
       self$setModel(model)
       self$setErrorHandler(private$handleHttpErrors)
       private$buildEndPoints()
@@ -38,13 +39,6 @@ CaretPlumber <- R6Class(
     features = function(){
       features(private$model)
     },
-    #' Importancia de cada variable en el entrenamiento.
-    #' @return data.frame con la importancia de cada variable en el
-    #' entrenamiento. Tiene que haber sido previamente calculada en la mayoría
-    #' de los casos.
-    featureImportance = function(){
-        featureImportance(private$model)
-    },
     #' Predice el modelo.
     #' @param X data.frame con las variables independientes.
     #' @return Vector con las predicciones de la variable objetivo.
@@ -63,19 +57,31 @@ CaretPlumber <- R6Class(
       self$handle("GET", "/trainResults", function(req, res){
         self$trainResults()
       })
-      self$handle("GET", "/featureImportance", function(req, res){
-        self$featureImportance()
+      self$handle("GET", "/features", function(req, res){
+        self$features()
       })
       self$handle("GET", "/predict", function(req, res){
-
+        private$getRequestArgs(req) %>%
+          coerceData(self$features()) %>%
+          self$predict()
       })
       self$handle("POST", "/predict", function(req, res){
         X <- jsonlite::fromJSON(req$postBody)
         if(!("data.frame" %in% class(X)))
           stop("parse error: Couldn't parse request as a valid data.frame.")
-        X <- coerceData(X, self$features())
-        self$predict(X)
+        coerceData(X, self$features()) %>%
+          self$predict()
       })
+    },
+    #' Obtiene los argumentos de la query url como un data.frame. Todas las
+    #' columnas son de caracteres.
+    #' @param req Objeto request.
+    #' @return data.frame con los argumentos.
+    getRequestArgs = function(req){
+      req$args %>%
+        map(~ if(is.character(.x)) .x) %>%
+        compact() %>%
+        data.frame()
     },
     #' Maneja los errores que se producen en los endpoints.
     #' @param req Objeto de peticion.
@@ -94,3 +100,8 @@ CaretPlumber <- R6Class(
     }
   )
 )
+
+if(F){
+  api <- CaretPlumber$new(mdl)
+  api$run(port = 9999)
+}
