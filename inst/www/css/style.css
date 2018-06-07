@@ -1,0 +1,18 @@
+#header{
+  height: 85px;
+  padding-left: 20px;
+}
+#header #logo{
+  height: 50px;
+}
+#header h1{
+  font-weight: bold;
+  font-size: 25px;
+  margin-left: 40px;
+}
+#model-summary>div{
+  margin-bottom: 10px;
+}
+#model-summary label{
+  font-weight:bold;
+}

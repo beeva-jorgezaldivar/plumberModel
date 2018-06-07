@@ -11,6 +11,7 @@ CaretPlumber <- R6Class(
       self$setModel(model)
       self$setErrorHandler(private$handleHttpErrors)
       private$buildEndPoints()
+      private$buildStaticFileServer()
     },
     #' Obtiene una copia del modelo base.
     #' @return Copia del modelo base.
@@ -96,12 +97,24 @@ CaretPlumber <- R6Class(
       # un 400: Bad request, sino mandamos un 500: Internal server error.
       res$status <- if(errorKnown) 400 else 500
       # Además enviamos el mensaje de error en el cuerpo de la respuesta.
+      print(err)
       list(error = jsonlite::unbox(err$message))
+    },
+    #' Construye el servidor de archivos estáticos.
+    buildStaticFileServer = function(){
+      default.folder <-
+        if(is.null(packageName())){
+          "inst/www/"
+        } else {
+          system.file("www", package = packageName())
+        }
+      static <- plumber::PlumberStatic$new(default.folder)
+      self$mount("/", static)
     }
   )
 )
 
 if(F){
-  api <- CaretPlumber$new(mdl)
-  api$run(port = 9999)
+    api <- CaretPlumber$new(mdl)
+    api$run(port = 9999)
 }

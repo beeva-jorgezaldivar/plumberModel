@@ -1,0 +1,117 @@
+<html lang="en" >
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.8/angular-material.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/angular-material-data-table/0.10.10/md-data-table.min.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic">
+    <link rel="stylesheet" href="css/style.css">
+  </head>
+  <body ng-app="thisApp" ng-controller="thisAppCtrl" layout="column" ng-cloak>
+    <!-- HTML Content -->
+    <md-toolbar id = "header" class="md-hue-2" layout="row" layout-align="center center">
+      <a href="https://beeva.com"><img id="logo" src="img/logo.png"></a>
+      <div class="md-toolbar-tools">
+        <h1>{{modelInfo.name[0]}}: {{modelInfo.version[0]}}</h1>
+      </div>
+    </md-toolbar>
+    <md-content flex layout="row" layout-margin>
+      <md-content flex layout="column">
+        <md-content flex layout="column">
+          <md-toolbar class="md-accent">
+            <div class="md-toolbar-tools">
+              <md-button class="md-icon-button" aria-label="Model summary" ng_click="null">
+                <md-icon>settings</md-icon>
+              </md-button>
+              <h2>Model summary</h2>
+            </div>
+          </md-toolbar>
+          <div id="model-summary" class="md-padding">
+            <div>
+              <label>Name:</label> {{firstIfExists(modelInfo.name)}}
+            </div>
+            <div>
+              <label>Version:</label> {{firstIfExists(modelInfo.version)}}
+            </div>
+            <div>
+              <label>Last trained:</label> {{firstIfExists(modelInfo.lastTrained)}}
+            </div>
+            <div>
+              <label>Type:</label> {{firstIfExists(modelInfo.type)}}
+            </div>
+            <div>
+              <label>Method:</label> {{firstIfExists(modelInfo.method)}}
+            </div>
+          </div>
+        </md-content>
+        <md-content flex layout="column">
+          <md-toolbar class="md-accent" >
+            <div class="md-toolbar-tools">
+              <md-button class="md-icon-button" aria-label="Training results">
+                <md-icon>bar_chart</md-icon>
+              </md-button>
+              <h2>Training results</h2>
+            </div>
+          </md-toolbar>
+          <md-table-container>
+              <table md-table>
+                <thead md-head>
+                  <tr md-row>
+                    <th md-column>Metric</th>
+                    <th md-column>Value</th>
+                  </tr>
+                </thead>
+                <tbody md-body>
+                  <tr md-row ng-repeat="result in trainResults">
+                    <td md-cell>{{result.Metric}}</td>
+                    <td md-cell>{{result.Value}}</td>
+                  </tr>
+                </tbody>
+            </table>
+          </md-table-container>
+        </md-content>
+      </md-content>
+      <md-content flex layout="column">
+          <md-toolbar class="md-accent">
+            <div class="md-toolbar-tools">
+              <md-button class="md-icon-button" aria-label="Training results">
+                <md-icon>table_chart</md-icon>
+              </md-button>
+              <h2>Input features</h2>
+            </div>
+          </md-toolbar>
+          <md-list>
+            <md-list-item class="md-2-line" ng-repeat="(name, feature) in features" ng-click="null">
+              <div class="md-list-item-text">
+                <h3>{{name}}</h3>
+                <p>{{feature.class[0]}}</p>
+              </div>
+              <div ng-if="feature.class.includes('numeric')">
+                  <span><label>Mean:</label> {{feature.mean[0]}}</span>
+                  <span><label>Stdev:</label> {{feature.std[0]}}</span>
+              </div>
+              <md-chips ng-if="feature.class.includes('factor')" ng-model="feature.levels" md-removable="false">
+                <md-chip-template>
+                  {{$chip}}
+                </md-chip-template>
+              </md-chips>
+            </md-list-item>
+          </md-list>
+
+      </md-content>
+    </md-content>
+    <!-- Angular Material requires Angular.js Libraries -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-messages.min.js"></script>
+
+    <!-- Angular Material Library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.8/angular-material.min.js"></script>
+    <!-- Angular Material Table -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material-data-table/0.10.10/md-data-table.min.js"></script>
+    <!-- Application js -->
+    <script src="js/app.js"></script>
+  </body>
+</html>
