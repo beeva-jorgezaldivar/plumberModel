@@ -1,6 +1,41 @@
-CaretPlumber <- R6Class(
-  classname = "CaretPlumber",
+#' Añade la funcionalidad a un objeto plumber de poder simular requests desde
+#' R sin tener que levantar la API. Ayuda para testeo.
+PlumberMocker <- R6Class(
   inherit = plumber::plumber,
+  classname = "Plumbermocker",
+  public = list(
+    #' Simula una petición a la api.
+    #' @param verb Verbo de peticion "GET", "POST" ...
+    #' @param path Url de la petición, por ejemplo '/foo'.
+    #' @param query_str Parametros como una url query 'foo=1&&bar=fooBar'.
+    #' @param body Cuerpo de la petición, por ejemplo un JSON.
+    request = function(verb, path, query_str = "", body = ""){
+      self$serve(
+        private$makeRequest(verb, path, query_str, body),
+        private$PlumberResponse$new()
+      )
+    },
+    #' Especializacion del metodo request para peticiones GET.
+    get = function(...) self$request(verb = "GET", ...),
+    #' Especializacion del metodo request para peticiones POST.
+    post = function(...) self$request(verb = "POST", ...)
+  ),
+  private = list(
+    PlumberResponse = getFromNamespace("PlumberResponse", "plumber"),
+    makeRequest = function(verb, path, query_str = "", body = ""){
+      req <- new.env()
+      req$REQUEST_METHOD <- toupper(verb)
+      req$PATH_INFO <- path
+      req$QUERY_STRING <- query_str
+      req$rook.input <- list(read_lines = function(){ body })
+      req
+    }
+  )
+)
+
+PlumberModel <- R6Class(
+  classname = "PlumberModel",
+  inherit = PlumberMocker,
   #' Métodos públicos. Las clases hijas los deben implementar si el modelo es
   #' distinto para ser compatibles con la api.
   public = list(
@@ -81,7 +116,7 @@ CaretPlumber <- R6Class(
       req$args %>%
         map(~ if(is.character(.x)) .x) %>%
         compact() %>%
-        data.frame()
+        as_tibble()
     },
     #' Maneja los errores que se producen en los endpoints.
     #' @param req Objeto de peticion.
@@ -104,8 +139,8 @@ CaretPlumber <- R6Class(
 
 #' Añade a la API un servidor web de archivos estáticos que se monta sobre la
 #' url '/'.
-CaretPlumberWebApp <- R6Class(
-  inherits = CaretPlumber,
+PlumberModelWebApp <- R6Class(
+  inherit = PlumberModel,
   public = list(
     #' Constructor
     #' @param model Modelo sobre el que se construye la API.
@@ -134,6 +169,6 @@ CaretPlumberWebApp <- R6Class(
 )
 
 if(F){
-    api <- CaretPlumber$new(mdl)
+    api <- PlumberModel$new(mdl)
     api$run(port = 9999)
 }
