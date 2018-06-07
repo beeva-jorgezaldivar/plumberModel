@@ -11,7 +11,6 @@ CaretPlumber <- R6Class(
       self$setModel(model)
       self$setErrorHandler(private$handleHttpErrors)
       private$buildEndPoints()
-      private$buildStaticFileServer()
     },
     #' Obtiene una copia del modelo base.
     #' @return Copia del modelo base.
@@ -99,16 +98,36 @@ CaretPlumber <- R6Class(
       # Además enviamos el mensaje de error en el cuerpo de la respuesta.
       print(err)
       list(error = jsonlite::unbox(err$message))
-    },
+    }
+  )
+)
+
+#' Añade a la API un servidor web de archivos estáticos que se monta sobre la
+#' url '/'.
+CaretPlumberWebApp <- R6Class(
+  inherits = CaretPlumber,
+  public = list(
+    #' Constructor
+    #' @param model Modelo sobre el que se construye la API.
+    #' @param static.dir Directorio desde el que se sirven los archivos.
+    #' estaticos.
+    initialize = function(model, static.dir = NULL){
+      super$initialize(model)
+      private$buildStaticFileServer(static.dir)
+    }
+  ),
+  private = list(
     #' Construye el servidor de archivos estáticos.
-    buildStaticFileServer = function(){
+    #' @param static.dir Directorio desde el que se sirven los archivos.
+    buildStaticFileServer = function(static.dir = NULL){
       default.folder <-
         if(is.null(packageName())){
           "inst/www/"
         } else {
           system.file("www", package = packageName())
         }
-      static <- plumber::PlumberStatic$new(default.folder)
+      folder <- if(is.null(static.dir)) default.folder else static.dir
+      static <- plumber::PlumberStatic$new(folder)
       self$mount("/", static)
     }
   )
