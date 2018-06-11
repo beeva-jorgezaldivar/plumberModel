@@ -5,15 +5,7 @@
 #' @return Lista de variables con las características de la descripción de la
 #' función genérica.
 inputFeatures.train <- function(mdl){
-  sapply(mdl$trainingData %>% select(-.outcome), function(feature){
-    if("numeric" %in% class(feature) || "integer" %in% class(feature)){
-      list(class = "numeric", mean = mean(feature), std = var(feature))
-    } else if ("factor" %in% class(feature)){
-      list(class = class(feature), levels = levels(feature))
-    } else {
-      stop(paste0("Unknown feature class ", class(feature), "."))
-    }
-  }, simplify = FALSE)
+  inputFeaturesFromDataFrame(mdl$trainingData %>% select(-.outcome))
 }
 #' Implementación para un modelo de caret. Opcionalmente se le puede añadir
 #' los atributos 'name' y 'version' para llevar un control de los modelos.

@@ -15,3 +15,17 @@ loadSampleModels <- function(){
   }
   model.list
 }
+
+#' Obtiene una descripción de las variables en función de un data.frame en
+#' particular.
+inputFeaturesFromDataFrame <- function(X){
+  sapply(X, function(feature){
+    if("numeric" %in% class(feature) || "integer" %in% class(feature)){
+      list(class = "numeric", mean = mean(feature), std = var(feature))
+    } else if ("factor" %in% class(feature)){
+      list(class = class(feature), levels = levels(feature))
+    } else {
+      stop(paste0("Unknown feature class ", class(feature), "."))
+    }
+  }, simplify = FALSE)
+}
