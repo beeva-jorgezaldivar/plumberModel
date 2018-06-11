@@ -1,7 +1,7 @@
 #' Testea las funciones genéricas para un modelo.
 testGenerics <- function(mdl){
   #' Extracción de descripción de variables.
-  fs <- features(mdl)
+  fs <- inputFeatures(mdl)
   #' Chequeo que es una lista.
   expect_true("list" %in% class(fs))
   #' Chequeo que cada elemento de la lista esta nombrado

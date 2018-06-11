@@ -13,7 +13,7 @@ expect_equal(response$body, jsonlite::toJSON("bar"))
 model.list <- loadSampleModels()
 mdl <- model.list$iris_regression_standard_call_rf
 pb <- PlumberModel$new(mdl)
-pb$get("/features")$status %>% expect_equal(200)
+pb$get("/inputFeatures")$status %>% expect_equal(200)
 pb$get("/modelInfo")$status %>% expect_equal(200)
 pb$get("/trainResults")$status %>% expect_equal(200)
 

@@ -71,8 +71,8 @@ PlumberModel <- R6Class(
     },
     #' Definición de las variables del modelo.
     #' @return Lista con las variables e información sobre las mismas.
-    features = function(){
-      features(private$model)
+    inputFeatures = function(){
+      inputFeatures(private$model)
     },
     #' Predice el modelo.
     #' @param X data.frame con las variables independientes.
@@ -92,19 +92,19 @@ PlumberModel <- R6Class(
       self$handle("GET", "/trainResults", function(req, res){
         self$trainResults()
       })
-      self$handle("GET", "/features", function(req, res){
-        self$features()
+      self$handle("GET", "/inputFeatures", function(req, res){
+        self$inputFeatures()
       })
       self$handle("GET", "/predict", function(req, res){
         private$getRequestArgs(req) %>%
-          coerceData(self$features()) %>%
+          coerceData(self$inputFeatures()) %>%
           self$predict()
       })
       self$handle("POST", "/predict", function(req, res){
         X <- jsonlite::fromJSON(req$postBody)
         if(!("data.frame" %in% class(X)))
           stop("parse error: Couldn't parse request as a valid data.frame.")
-        coerceData(X, self$features()) %>%
+        coerceData(X, self$inputFeatures()) %>%
           self$predict()
       })
     },

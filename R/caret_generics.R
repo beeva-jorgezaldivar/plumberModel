@@ -9,8 +9,8 @@
 #' @param mdl Modelo de entrada.
 #' @return Lista de variables con las características de la descripción de la
 #' función genérica.
-features <- function(mdl){
-  UseMethod("features")
+inputFeatures <- function(mdl){
+  UseMethod("inputFeatures")
 }
 #' Implementación para un modelo de caret dónde se han guardado los datos de
 #' entrenamiento del mismo.
@@ -18,7 +18,7 @@ features <- function(mdl){
 #' 'trainingData'.
 #' @return Lista de variables con las características de la descripción de la
 #' función genérica.
-features.train <- function(mdl){
+inputFeatures.train <- function(mdl){
   sapply(mdl$trainingData %>% select(-.outcome), function(feature){
     if("numeric" %in% class(feature) || "integer" %in% class(feature)){
       list(class = "numeric", mean = mean(feature), std = var(feature))
