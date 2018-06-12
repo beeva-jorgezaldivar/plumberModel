@@ -11,3 +11,4 @@ License: What license is it under?
 Depends: tidyverse, R6, testthat, caret, jsonlite
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 6.0.1
