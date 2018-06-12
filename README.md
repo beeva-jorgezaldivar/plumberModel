@@ -96,8 +96,8 @@ La respuesta sería
 
 ## 2. Crear nuevo endpoint
 
-El objeto PlumberModel es una [clase de R6](https://cran.r-project.org/web/
-packages/R6/vignettes/Introduction.html) que hereda de la clase plumber. 
+El objeto PlumberModel es una [clase de R6](https://cran.r-project.org/web/packages/R6/vignettes/Introduction.html) 
+que hereda de la clase plumber. 
 Para definir nuevos endpoints se puede construir una clase hija.
 
 ```r
@@ -115,9 +115,8 @@ CustomPlumberModel <- R6Class(
 )
 ```
 
-En la [documentación de la plumber](https://www.rplumber.io/docs/
-programmatic-usage.html#defining-endpoints) está explicado con más detalle la
-construcción de endpoints.
+En la [documentación de la plumber](https://www.rplumber.io/docs/programmatic-usage.html#defining-endpoints) 
+está explicado con más detalle la construcción de endpoints.
 
 ## 3. Añadir soporte para un modelo personalizado
 
