@@ -184,4 +184,8 @@ api$run(port = 9999)
 
 ![ejemplo front-end](doc/img/webapp-example.png)
 
+## 5. Ejemplos
+
+Se pueden encontrar varios ejemplos en el [repositorio](examples/)
+
 
