@@ -1,7 +1,7 @@
 Package: plumberModel
 Type: Package
 Title: Paquete que facilita la productivización de modelos en R, permitiendo crear una
-API con endpoints de predicción con minimo código.
+  API con endpoints de predicción con minimo código.
 Version: 0.1.0
 Author: Jorge Zaldivar
 Maintainer: Jorge Zaldivar <jorge.zaldivar@beeva.com>
