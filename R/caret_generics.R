@@ -10,7 +10,7 @@ inputFeatures.train <- function(mdl){
 #' Implementación para un modelo de caret. Opcionalmente se le puede añadir
 #' los atributos 'name' y 'version' para llevar un control de los modelos.
 #' @param mdl Objeto que contiene el modelo.
-#' @retun Lista de strings con información sobre el modelo.
+#' @return Lista de strings con información sobre el modelo.
 modelInfo.train <- function(mdl){
   if(is.null(mdl$name)){
     mdl$name <- "Unnamed model"

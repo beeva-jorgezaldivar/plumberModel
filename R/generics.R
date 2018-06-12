@@ -15,7 +15,7 @@ inputFeatures <- function(mdl){
 #' Función que devuelve información sobre el modelo a modo de una lista de
 #' strings.
 #' @param mdl Objeto que contiene el modelo.
-#' @retun Lista de strings con información sobre el modelo.
+#' @return Lista de strings con información sobre el modelo.
 modelInfo <- function(mdl){
   UseMethod("modelInfo")
 }
