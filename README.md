@@ -165,3 +165,23 @@ predict.customModel <- function(mdl){
 
 ```
 
+## 4. Visualización del estado del modelo
+
+Opcionalmente, además de la API, se puede montar un servidor web de páginas 
+estáticas en la url '/' utilizando la clase `PlumberApiWebApp`. El constructor
+toma como parámetro la ruta al directorio estático a utilizar. Si se deja nulo
+se monta un front-end por defecto.
+
+```r
+library(tidyverse)
+library(caret)
+library(plumberModel)
+
+modelo <- train(iris %>% select(-Species), iris$Species)
+api <- PlumberModelWebApp$new(modelo)
+api$run(port = 9999)
+```
+
+![ejemplo front-end](doc/img/webapp-example.png)
+
+
