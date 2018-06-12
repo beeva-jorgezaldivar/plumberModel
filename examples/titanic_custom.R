@@ -43,7 +43,7 @@ obtenerDatosEntrenamiento <- function(){
 #' @param ... Parametros de traind de caret.
 #' @return Objeto modelo entrenado
 train.input <- function(x, ...){
-  input.features <- inputFeaturesFromDataFrame(X)
+  input.features <- inputFeaturesFromDataFrame(x)
   X1 <- x %>% select(-Pclass, -Fare)
   X2 <- x %>% transmute(Pclass = as.numeric(Pclass), Fare = Fare)
   pca <- prcomp(X2, scale. = T, center = T)
