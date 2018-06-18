@@ -1,0 +1,19 @@
+<div flex layout="column" class = "info-wrapper" md-whiteframe="2" md-colors="{background: 'primary-50'}">
+  <md-toolbar class = "md-accent">
+    <div class ="md-toolbar-tools">
+      <md-icon>{{$ctrl.icon}}</md-icon>
+      <h2>{{$ctrl.title}}</h2>
+      <span flex></span>
+    </div>
+  </md-toolbar>
+  <md-list>
+    <md-list-item ng-repeat="(name, value) in $ctrl.list">
+      <div flex md-colors="{color: 'primary-700'}" class = "info-item-wrapper md-padding"
+      layout = "row" layout-align="space-around center">
+        <div class="info-item-label" md-colors="{color: 'primary-600'}" layout="row">{{name}}</div>
+        <span flex></span>
+        <div class="info-item-value" md-colors="{color: 'primary-700'}"> {{value}}</div>
+      </div>
+    </md-list-item>
+  </md-list>
+</div>

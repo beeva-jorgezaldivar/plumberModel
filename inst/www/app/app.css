@@ -1,0 +1,89 @@
+.limit-width{
+  max-width: 1200px;
+  margin: auto;
+}
+
+header{
+  margin-bottom: 2px;
+}
+
+header .md-toolbar-tools{
+  height: 80px !important;
+  margin-bottom: 0px !important;
+  margin-top: 0px !important;
+  max-height: none !important;
+}
+
+.brand-bar{
+    height: 80px;
+}
+.brand-bar .logo-wrapper{
+  height:60px;
+  width: 60px;
+  border-radius:50%;
+}
+.brand-bar .logo-wrapper img{
+  margin-top: 12px;
+  margin-left: 12px;
+  height: 40px
+}
+.brand-bar h1 .model-title{
+  margin-left: 40px;
+  font-size: 30px;
+  font-weight: bolder;
+  text-transform: uppercase;
+}
+.brand-bar h1 .model-version{
+  margin-left: 5px;
+  font-size: 18px;
+  font-weight: bolder;
+  text-transform: uppercase;
+}
+.nav-bar-wrapper{
+  height: 100%;
+}
+.nav-bar-wrapper .md-nav-bar {
+    line-height: 24px;
+    height: 100%;
+    border-bottom: 0;
+}
+.nav-bar-wrapper .md-nav-bar nav{
+  height: 100%;
+}
+.nav-bar-wrapper .md-nav-bar nav ul{
+  height: 100%;
+}
+.nav-bar-wrapper .md-nav-bar nav a{
+  height: 100%;
+  font-weight: bolder !important;
+  font-size: 16px;
+  padding: 32px 0;
+}
+
+.info-wrapper{
+  margin-bottom: 40px;
+  margin-right: 30px;
+}
+
+.info-wrapper h2{
+  margin-left: 20px;
+  font-weight: bolder;
+}
+.info-toolbar h2{
+    margin-left: 20px;
+  font-weight: bolder;
+}
+
+.info-item-wrapper:not(:first-of-type){
+  border-top-style: solid;
+  border-top-width: 1px;
+}
+.info-item-label{
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: bolder;
+}
+.info-item-value{
+  font-weight: bolder;
+  font-size: 25px;
+}

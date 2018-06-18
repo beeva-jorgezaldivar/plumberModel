@@ -1,0 +1,54 @@
+<div layout-gt-sm = "row">
+  <div md-whiteframe="2" flex="50">
+  <md-toolbar class = "md-accent info-toolbar">
+    <div class ="md-toolbar-tools">
+      <md-icon>table_chart</md-icon>
+      <h2>Input features</h2>
+      <span flex></span>
+      <md-button class= "md-icon-button" ng-click="submitPrediction()">
+        <md-icon>cloud_upload</md-icon>
+      </md-button>
+    </div>
+  </md-toolbar>
+  <div class="input-form-wrapper md-padding" md-colors = "{background: 'primary-50'}">
+    <form name="inputForm" >
+        <div ng-repeat="(name, value) in predictionRequestData">
+
+          <md-input-container ng-if = "value.class.includes('factor')"
+            class="md-block" >
+            <label>{{name}}</label>
+            <md-select required md-no-asterisk name="type" ng-model="predictionRequestData[name].value">
+              <md-option ng-repeat="level in value.levels">{{level}}</md-option>
+            </md-select>
+          </md-input-container>
+
+          <md-input-container ng-if = "value.class.includes('numeric')"
+            class="md-block">
+            <label>{{name}}</label>
+            <input required md-no-asterisk type="number" step="any" name="rate"
+              ng-model="predictionRequestData[name].value" ng-pattern="/^\d+(\.\d+)?$/" />
+          </md-input-container>
+        </div>
+    </form>
+  </div>
+</div>
+
+<div md-whiteframe="2" flex="50" style = "margin-left: 30px">
+  <md-toolbar class = "md-accent">
+    <div class ="md-toolbar-tools info-toolbar">
+      <md-icon>cloud_download</md-icon>
+      <h2>Api response</h2>
+      <span flex></span>
+    </div>
+  </md-toolbar>
+  <div class= "md-padding" md-colors = "{background: 'primary-50'}">
+    <div>
+      foo
+    </div>
+    <div layout = "row" layout-align="center center">
+      <md-button class="md-accent md-raised" ng-click="submitPrediction()">Predict</md-button>
+    </div>
+  </div>
+
+</div>
+
