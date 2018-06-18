@@ -1,0 +1,1 @@
+docker build . --tag plumber_model_boilerplate:latest
