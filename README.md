@@ -186,6 +186,6 @@ api$run(port = 9999)
 
 ## 5. Ejemplos
 
-Se pueden encontrar varios ejemplos en la [carpeta de ejemplos](examples/).
+Se pueden encontrar varios ejemplos en la [carpeta de ejemplos](doc/examples/).
 
 
