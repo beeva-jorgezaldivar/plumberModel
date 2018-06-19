@@ -29,3 +29,27 @@ inputFeaturesFromDataFrame <- function(X){
     }
   }, simplify = FALSE)
 }
+
+#' Crea el esqueleto de una aplicación.
+#' Crea un bootstrap de la aplicación con un Dockerfile y scripts para correrlo
+#' y crearlo.
+#' @param dir Directorio en el que crear el esqueleto.
+plumberModelSkeleton <- function(dir = "."){
+  if(is.null(packageName())){
+    root <- "inst/infraestructure"
+  } else {
+    root <- system.file("infraestructure", package = packageName())
+  }
+  files <-
+  list.files(path = root, recursive = TRUE, include.dirs = TRUE, 
+    full.names =TRUE)
+  file.copy(files, dir, recursive = TRUE)
+
+  if(is.null(packageName())){
+    root <- "inst/www"
+  } else {
+    root <- system.file("www", package = packageName())
+  }
+  dir.create(file.path(dir, "www"))
+  file.copy(root, dir, recursive = TRUE)
+}

@@ -15,7 +15,7 @@ obtenerModeloEntrenado <- function(){
 
 #' Funcion que levanta la api a partir de un modelo entrenado
 levantarApi <- function(mdl){
-    api <- PlumberModelWebApp$new(mdl)
+    api <- PlumberModelWebApp$new(mdl, static.dir = "www")
     api$run(port = 9999, host = "0.0.0.0")
 }
 
