@@ -87,3 +87,8 @@ header .md-toolbar-tools{
   font-weight: bolder;
   font-size: 25px;
 }
+.prediction{
+  margin-right: 30px;
+  font-weight: bolder;
+  font-size: 30px;
+}

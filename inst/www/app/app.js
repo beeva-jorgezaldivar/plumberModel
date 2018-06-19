@@ -57,6 +57,13 @@
     $http({method:'GET', url: '/inputFeatures'}).then(function(response){
       $scope.inputFeatures = response.data;
       $scope.predictionRequestData = JSON.parse(JSON.stringify($scope.inputFeatures));
+      for (var key in $scope.predictionRequestData)
+        if ($scope.predictionRequestData.hasOwnProperty(key)){
+          var pred = $scope.predictionRequestData[key];
+          if(pred.class.includes('numeric')) pred.value = Number(pred.mean)
+          else if(pred.class.includes('factor')) pred.value = pred.levels[0];
+        }
+        
     });
 
     $http({method:'GET', url: '/trainResults'}).then(function(resp){
@@ -72,7 +79,20 @@
     };
 
     $scope.submitPrediction = function(){
-      console.log($scope.predictionRequestData);
+      
+      var data = {};
+      for (var key in $scope.predictionRequestData)
+        if ($scope.predictionRequestData.hasOwnProperty(key))
+          data[key] = $scope.predictionRequestData[key].value;
+
+      var config = {
+        params: data,
+        headers: {'Accept': 'application/json'}
+      }
+      
+      $http.get("predict", config).then(function(response){
+        $scope.prediction = response.data[0];
+      })
     }
 
   });
