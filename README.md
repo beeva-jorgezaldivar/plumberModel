@@ -1,37 +1,37 @@
 # plumberModel
 
-Paquete que facilita la productivización de modelos en R, permitiendo crear una
-API con endpoints de predicción con minimo código.
+Package that helps to deploy a trained model to production whit minimal code.
+It creates an API using plumber package with several useful endpoints.
 
 ```r
 library(tidyverse)
 library(caret)
 library(plumberModel)
 
-modelo <- train(iris %>% select(-Species), iris$Species)
-api <- PlumberModel$new(modelo)
-api$run(port = 9999)
+model <- train(iris %>% select(-Species), iris$Species)
+api <- PlumberModel$new(model)
+api$run(port = 8000)
 ```
 
-## 1. Endpoints disponibles
+## 1. Available endpoints
 
-### `GET` /modelInfo 
+### `GET` /modelInfo
 
-Devuelve un json con información relativa al modelo.
+Returns a JSON with basic information about the model.
 
 ```json
 {
   "name":["Unnamed model"],
   "method":["rf"],
   "type":["Regression"],
-  "version":["Unversioned model"],
+  "version":["1.0.0"],
   "hyperParameters":[{"mtry":2}]
 }
 ```
 
 ### `GET` /trainResults
 
-Devuelve una serie de métricas y sus valores.
+Returns the metrics calculated for the trained model.
 
 ```json
 [
@@ -46,7 +46,8 @@ Devuelve una serie de métricas y sus valores.
 
 ### `GET` /inputFeatures
 
-Devuelve las variables de entrada al modelo para su predicción.
+Returns the features of the data used to train the model and some information
+about them.
 
 ```json
 {
@@ -59,17 +60,16 @@ Devuelve las variables de entrada al modelo para su predicción.
 
 ### `GET` /predict
 
-Predice con el modelo utilizando como input los parametros de la query. 
+Predicts using query params as features. The name of each param must match
+with the name of an input variable.
 
-El nombre de cada parámetro tiene que coincidir con el nombre de una variable 
-de entrada sin importar el orden.
-
-Siguiendo con el ejemplo, una query valida seria:
+An example query would be:
 
 ```url
 predict?Sepal.Length=5.0&&Sepal.Width=3.5&&Petal.Width=1.21&&Species=setosa
 ```
-Devuelve las predicciones del modelo.
+
+Returns model predictions as a JSON array.
 
 ```json
   [2.5505]
@@ -77,28 +77,32 @@ Devuelve las predicciones del modelo.
 
 ### `POST` /predict
 
-Análogo a `GET` /predict pero enviando los datos de entrada en un json en el
-cuerpo del post.
+It has the same behavior as the `GET` version, but uses POST body as input. 
+
+The body must be a JSON with the following structure:
 
 ```json
 [
   {"Sepal.Length":5.1,"Sepal.Width":3.5,"Petal.Width":0.2,"Species":"setosa"},
   {"Sepal.Length":4.9,"Sepal.Width":3,"Petal.Width":0.2,"Species":"setosa"},
   {"Sepal.Length":4.7,"Sepal.Width":3.2,"Petal.Width":0.2,"Species":"setosa"}
-] 
+]
 ```
 
-La respuesta sería
+The response would be:
 
 ```json
   [1.4379,1.4549,1.4437]
 ```
 
-## 2. Crear nuevo endpoint
+## 2. Adding custom endpoins
 
-El objeto PlumberModel es una [clase de R6](https://cran.r-project.org/web/packages/R6/vignettes/Introduction.html) 
-que hereda de la clase plumber. 
-Para definir nuevos endpoints se puede construir una clase hija.
+PlumberModel objects are [R6 classes](https://cran.r-project.org/web/packages/R6/vignettes/Introduction.html)
+that inherits from plumber class.
+
+In order to add custom endpoints one would have to define a subclass.
+
+The following example adds a new '/helloWorld' endpoint:
 
 ```r
 CustomPlumberModel <- R6Class(
@@ -115,50 +119,47 @@ CustomPlumberModel <- R6Class(
 )
 ```
 
-En la [documentación de la plumber](https://www.rplumber.io/docs/programmatic-usage.html#defining-endpoints) 
-está explicado con más detalle la construcción de endpoints.
+You can find more information about plumber and its quirks on 
+[plumber documentation](https://www.rplumber.io/docs/programmatic-usage.html#defining-endpoints)
 
-## 3. Añadir soporte para un modelo personalizado
+## 3. Add support for custom trained models
 
-Por defecto están soportados los modelos entrenados con la librería `caret`. Para
-hacer compatible modelos personalizados hay que implementar una serie de 
-[funciones genéricas de S3](http://adv-r.had.co.nz/S3.html).
+By default PlumberModel only supports models trained with caret library. In
+order to make it work with custom models it is necessary to implement several
+[generic S3 functions](http://adv-r.had.co.nz/S3.html).
+
+The following example would work with a custom model with class 'customModel'
 
 ```r
 
-# Partiendo de un objeto `mdl` con clase 'customModel'
-
-#' Función que devuelve información sobre el modelo a modo de una lista de
-#' strings.
-#' @param mdl Objeto que contiene el modelo.
-#' @return Lista de strings con información sobre el modelo.
+#' Gets basic info about the model.
+#' @param mdl Object with class 'customModel'.
+#' @return Named list with the custom information about the model
 modelInfo.customModel <- function(mdl){
   ...
 }
 
-#' Función que devuelve la descripción de las variables de entrada como una
-#' lista. El nombre para cada objeto de la lista debe ser el nombre de la
-#' variable y debe tener un atributo 'class' que puede ser 'numeric' o 'factor'.
-#' En el caso de ser 'factor' tiene que contener un atributo extra 'levels',
-#' que contiene los niveles de cada atributo.
-#' @param mdl Modelo de entrada.
-#' @return Lista de variables con las características de la descripción de la
-#' función genérica.
+#' Returns a description of each input variable of the model.
+#' @param mdl Object with class 'customModel'.
+#' @return Named list with the following structure:
+#' list(
+#'  <var_name_1> = list(class = ["numeric"]), <other_info> = ..., ...),
+#'  <var_name_2> = list(class = ["factor"], <levels> = ["lvl1", "lvl2"], ...)
+#¡ )
 inputFeatures.customModel <- function(mdl){
   ...
 }
 
-#' Función que obtiene los resultados del entrenamiento de un modelo,
-#' devolviendo una serie de métricas como un data.frame.
-#' @param mdl Objeto que contiene el modelo.
-#' @return data.frame con las métricas del modelo.
+#' Gets the metrics of the model.
+#' @param mdl Object with class 'customModel'.
+#' @return Data.frame with the metrics.
 trainResults.customModel <- function(mdl){
   ...
 }
 
-#' Función que predice sobre un modelo.
-#' @param mdl Objeto que contiene el modelo.
-#' @return Vector con las predicciones del modelo.
+#' Predicts using the model.
+#' @param mdl Object with class 'customModel'.
+#' @return Vector with the predictionss
 predict.customModel <- function(mdl){
   ...
 }
@@ -167,10 +168,9 @@ predict.customModel <- function(mdl){
 
 ## 4. Visualización del estado del modelo
 
-Opcionalmente, además de la API, se puede montar un servidor web de páginas 
-estáticas en la url '/' utilizando la clase `PlumberApiWebApp`. El constructor
-toma como parámetro la ruta al directorio estático a utilizar. Si se deja nulo
-se monta un front-end por defecto.
+Optionally, you cand build a static web server on top of the API, for monitoring
+the model.
+You must use the class `PlumberModelWebApp` and access the index url '/'.
 
 ```r
 library(tidyverse)
@@ -179,13 +179,11 @@ library(plumberModel)
 
 modelo <- train(iris %>% select(-Species), iris$Species)
 api <- PlumberModelWebApp$new(modelo)
-api$run(port = 9999)
+api$run(port = 8000)
 ```
 
 ![ejemplo front-end](doc/img/webapp-example.png)
 
 ## 5. Ejemplos
 
-Se pueden encontrar varios ejemplos en la [carpeta de ejemplos](doc/examples/).
-
-
+You can find examples in the [examples folder](doc/examples/).
