@@ -1,6 +1,6 @@
 library(tidyverse)
 library(caret)
-library(caretPlumber)
+library(plumberModel)
 
 # -----------------------------------------------------------------------------
 # -------------- TRANSFORMACION DATOS ENTRENAMIENTO ---------------------------
